@@ -6,20 +6,20 @@ class Sprite
   CSS_OUTPUT = RAILS_ROOT + '/tmp/css_sprite.css'
   
   def initialize
-    @output = {}
     @image_path = DEFAULT_IMAGE_PATH
     @config_files = Dir.glob("#{CONFIG_PATH}/css_sprite*.yml")
   end
   
   def build
     @config_files.each do |config_file|
+      @output = {}
       sprite_config = File.open(config_file) {|f| YAML::load(f)}
       @image_path = (sprite_config['config']['base_directory'])?RAILS_ROOT+"/"+sprite_config['config']['base_directory']+"/":DEFAULT_IMAGE_PATH
       @css_output = (sprite_config['config']['css_output'])?RAILS_ROOT+"/"+sprite_config['config']['css_output']:CSS_OUTPUT
       sprite_config['images'].each do |configuration|
          output_image(configuration)
       end
-      output_css
+      output_css(sprite_config)
     end
   end
   
@@ -48,14 +48,14 @@ class Sprite
     dest_image.write(@image_path + dest)
   end
   
-  def output_css
+  def output_css(configuration)
     File.open(@css_output, 'w') do |f|
       @output.each do |dest, results|
         results.each do |result|
           f.puts ".#{result[:name]}"
-          f.puts "\tbackground: url('/images/#{dest}') no-repeat #{result[:x]}px #{result[:y]}px"
-          f.puts "\twidth: #{result[:width]}px"
-          f.puts "\theight: #{result[:height]}px"
+          f.puts "\tbackground: url('/images/#{dest}') no-repeat #{result[:x]}px #{result[:y]}px;"
+          f.puts "\twidth: #{result[:width]}px;"
+          f.puts "\theight: #{result[:height]}px;"
           f.puts ""
         end
       end
