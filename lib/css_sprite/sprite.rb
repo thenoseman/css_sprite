@@ -47,7 +47,7 @@ class Sprite
       @output.each do |dest, results|
         results.each do |result|
           f.puts ".#{result[:name]}"
-          f.puts "\tbackgound: url('/images/#{dest}') no-repeat #{result[:x]}px #{result[:y]}px"
+          f.puts "\tbackground: url('/images/#{dest}') no-repeat #{result[:x]}px #{result[:y]}px"
           f.puts "\twidth: #{result[:width]}px"
           f.puts "\theight: #{result[:height]}px"
           f.puts ""
@@ -60,8 +60,10 @@ class Sprite
     width = [src_image.columns + x, dest_image.columns].max
     height = [src_image.rows + y, dest_image.rows].max
     image = Magick::Image.new(width, height)
-    image.composite!(dest_image, 0, 0, Magick::AddCompositeOp)
-    image.composite!(src_image, x, y, Magick::AddCompositeOp)
+    image.opacity = Magick::MaxRGB
+    
+    image.composite!(dest_image, 0, 0, Magick::OverCompositeOp)
+    image.composite!(src_image, x, y, Magick::OverCompositeOp)
     image
   end
   
